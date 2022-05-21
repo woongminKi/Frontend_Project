@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Header from 'components/Header/Header';
+import SearchInput from 'components/Header/SearchInput';
 import List from 'components/List';
 
 export interface optionLists {
@@ -22,7 +22,9 @@ function App() {
   const [keyword, setKeyword] = useState([]);
   const [apiDataList, setApiDataList] = useState<optionLists[]>([]);
   const [list, setList] = useState<optionLists[]>([]);
+  const [remainList, setRemainList] = useState<optionLists[]>([]);
   const [checkType, setCheckType] = useState<string>('');
+  const [isFetching, setIsFetching] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -33,10 +35,39 @@ function App() {
       });
       setApiDataList(data);
       setList(data.slice(0, 9));
+      setRemainList(data.slice(9));
+      setIsFetching(false);
     }
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const infinityScroll = (): void => {
+      if (!list.length) {
+        return;
+      }
+
+      const fetchAddData = () => {
+        setList(list.concat(remainList.slice(0, 9)));
+        setRemainList(remainList.slice(9));
+      };
+
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = document.documentElement.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight && isFetching === false) {
+        fetchAddData();
+      }
+    };
+
+    window.addEventListener('scroll', infinityScroll);
+
+    return () => {
+      window.removeEventListener('scroll', infinityScroll);
+    }
+  }, [isFetching, remainList, list]);
 
   const handleCheckType = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setCheckType(e.target.value);
@@ -74,7 +105,7 @@ function App() {
         {createdOptions('place', handleCheckType)}
         {createdOptions('type', handleCheckType)}
       </form>
-      <Header onKeywordChange={setKeyword} />
+      <SearchInput onKeywordChange={setKeyword} />
 
       <List lists={list} />
     </>
