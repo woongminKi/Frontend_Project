@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import styled from '@emotion/styled';
 
 import SearchInput from 'components/Header/SearchInput';
-import List from 'components/List/List';
-import DetailPage from 'components/DetailPage/DetailPage';
+import List from '../components/List/List';
+import DetailPage from '../components/DetailPage/DetailPage';
 
 export interface optionLists {
   club: {
@@ -21,13 +22,15 @@ export interface optionLists {
   price: number;
 }
 
-function App() {
+export default function App() {
   const location = useLocation();
-  const [keyword, setKeyword] = useState([]);
+  const [keyword, setKeyword] = useState<string>('');
   const [apiDataList, setApiDataList] = useState<optionLists[]>([]);
   const [list, setList] = useState<optionLists[]>([]);
   const [remainList, setRemainList] = useState<optionLists[]>([]);
+  const [originList, setOriginList] = useState<optionLists[]>([]);
   const [checkType, setCheckType] = useState<string>('');
+  const [checkPlace, setCheckPlace] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -40,6 +43,7 @@ function App() {
       setApiDataList(data);
       setList(data.slice(0, 9));
       setRemainList(data.slice(9));
+      setOriginList(data.slice(0, 9));
       setIsLoading(false);
     }
 
@@ -47,7 +51,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const infinityScroll = (): void => {
+    const handleScroll = (): void => {
       if (!list.length) {
         return;
       }
@@ -66,18 +70,62 @@ function App() {
       }
     };
 
-    window.addEventListener('scroll', infinityScroll);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', infinityScroll);
+      window.removeEventListener('scroll', handleScroll);
     }
   }, [isLoading, remainList, list]);
+
+  useEffect(() => {
+    if (checkType && checkPlace) {
+      const allFilteredList = list.filter((item) => {
+        return (item.club.type ===checkType && item.club.place === checkPlace);
+      });
+
+      setList(allFilteredList);
+    } else if (checkType) {
+      const typeFilteredList = list.filter((item) => {
+        return (item.club.type === checkType);
+      });
+
+      setList(typeFilteredList);
+    } else {
+      const placeFilteredList = list.filter((item) => {
+        return (item.club.place === checkPlace);
+      });
+
+      setList(placeFilteredList);
+    }
+
+    if (keyword) {
+      const keywordFilteredList = list.filter((item) => {
+        if (keyword === item.club.name.split('-')[0]) {
+          return (keyword === item.club.name.split('-')[0]);
+        } else if (keyword === item.club.name.split('-')[1]) {
+          return (keyword === item.club.name.split('-')[1]);
+        } else if (keyword === item.club.place) {
+          return (keyword === item.club.place);
+        } else if (keyword === item.club.type) {
+          return (keyword === item.club.type);
+        }
+      });
+
+      setList(keywordFilteredList);
+    } else {
+      setList(originList);
+    }
+  }, [checkType, checkPlace, keyword]);
 
   const handleCheckType = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setCheckType(e.target.value);
   };
 
-  const createdOptions = (
+  const handleCheckPlace = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setCheckPlace(e.target.value);
+  };
+
+  const makeOptions = (
     value: keyof optionLists['club'],
     onChange: React.FormEventHandler
   ) => {
@@ -90,30 +138,38 @@ function App() {
     const typeList = Array.from(new Set(typeArray));
 
     return (
-      <select name={value} onChange={onChange} defaultValue='default'>
-        <option value='default' disabled>
+      <Select name={value} onChange={onChange} defaultValue='default'>
+        <Option value='default' disabled>
           {value}
-        </option>
+        </Option>
         {typeList.map((type) => (
-          <option value={type} key={type}>
+          <Option value={type} key={type}>
             {type}
-          </option>
+          </Option>
         ))}
-      </select>
+      </Select>
     );
+  };
+
+  const handleRefreshList = (): void => {
+    setList(originList);
+    window.location.reload();
   };
 
   return (
     <>
-      {location.pathname === '/' &&
-        <>
-          <form>
-            {createdOptions('place', handleCheckType)}
-            {createdOptions('type', handleCheckType)}
-          </form>
+      {!isLoading && location.pathname === '/' &&
+        <HeaderWrapper>
+          <Button onClick={handleRefreshList}>초기화</Button>
+          <Form>
+            {makeOptions('place', handleCheckPlace)}
+            {makeOptions('type', handleCheckType)}
+          </Form>
           <SearchInput onKeywordChange={setKeyword} />
-        </>
+        </HeaderWrapper>
       }
+
+      {isLoading && <LoadingDiv>로딩중입니다...</LoadingDiv>}
 
       <Routes>
         <Route path='/' element={<List lists={list} />} />
@@ -123,4 +179,45 @@ function App() {
   );
 }
 
-export default App;
+const HeaderWrapper = styled('div')`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+`;
+
+const Form = styled('form')`
+  margin-right: 10px;
+`;
+
+const Select = styled('select')`
+  position: relative;
+  width: 200px;
+  height: 35px;
+  background: transparent;
+  border-radius: 4px;
+  border: 2px solid lightcoral;
+  margin-right: 10px;
+  padding: 0 5px;
+`;
+
+const Option = styled('option')`
+  background: lightcoral;
+  color: #fff;
+  padding: 3px 0;
+  font-size: 16px;
+`;
+
+const LoadingDiv = styled('div')`
+  margin-top: 340px;
+  text-align: center;
+  font-size: 50px;
+`;
+
+const Button = styled('button')`
+  width: 100px;
+  height: 35px;
+  background: transparent;
+  border-radius: 4px;
+  border: 2px solid lightcoral;
+  margin-right: 10px;
+`;
