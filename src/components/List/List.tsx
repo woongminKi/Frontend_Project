@@ -17,7 +17,6 @@ export default function List({ lists }: { lists: optionLists[] }) {
             <h2>{ list.club.name }</h2>
             <p>{ list.club.description }</p>
             <p>{ list.price }원</p>
-            <hr />
             <span>✅클럽: { list.club.type }</span>
             <span>✅장소: { list.club.place }</span>
           </TextWrapper>
