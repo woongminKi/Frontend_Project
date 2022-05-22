@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import axios from 'axios';
+
 import SearchInput from 'components/Header/SearchInput';
-import List from 'components/List';
+import List from 'components/List/List';
+import DetailPage from 'components/DetailPage/DetailPage';
 
 export interface optionLists {
   club: {
@@ -19,12 +22,13 @@ export interface optionLists {
 }
 
 function App() {
+  const location = useLocation();
   const [keyword, setKeyword] = useState([]);
   const [apiDataList, setApiDataList] = useState<optionLists[]>([]);
   const [list, setList] = useState<optionLists[]>([]);
   const [remainList, setRemainList] = useState<optionLists[]>([]);
   const [checkType, setCheckType] = useState<string>('');
-  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -36,7 +40,7 @@ function App() {
       setApiDataList(data);
       setList(data.slice(0, 9));
       setRemainList(data.slice(9));
-      setIsFetching(false);
+      setIsLoading(false);
     }
 
     fetchData();
@@ -57,7 +61,7 @@ function App() {
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      if (scrollTop + clientHeight >= scrollHeight && isFetching === false) {
+      if (scrollTop + clientHeight >= scrollHeight && isLoading === false) {
         fetchAddData();
       }
     };
@@ -67,7 +71,7 @@ function App() {
     return () => {
       window.removeEventListener('scroll', infinityScroll);
     }
-  }, [isFetching, remainList, list]);
+  }, [isLoading, remainList, list]);
 
   const handleCheckType = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setCheckType(e.target.value);
@@ -101,13 +105,20 @@ function App() {
 
   return (
     <>
-      <form>
-        {createdOptions('place', handleCheckType)}
-        {createdOptions('type', handleCheckType)}
-      </form>
-      <SearchInput onKeywordChange={setKeyword} />
+      {location.pathname === '/' &&
+        <>
+          <form>
+            {createdOptions('place', handleCheckType)}
+            {createdOptions('type', handleCheckType)}
+          </form>
+          <SearchInput onKeywordChange={setKeyword} />
+        </>
+      }
 
-      <List lists={list} />
+      <Routes>
+        <Route path='/' element={<List lists={list} />} />
+        <Route path='/detail/:id' element={<DetailPage lists={list} />} />
+      </Routes>
     </>
   );
 }
