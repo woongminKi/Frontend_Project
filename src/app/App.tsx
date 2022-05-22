@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import styled from '@emotion/styled';
 
 import SearchInput from 'components/Header/SearchInput';
+import { apiData } from 'api/ApiData';
 import List from '../components/List/List';
 import DetailPage from '../components/DetailPage/DetailPage';
 
@@ -35,11 +35,8 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data } = await axios.get('https://api.json-generator.com/templates/ePNAVU1sgGtQ/data', {
-        headers: {
-          'Authorization': 'Bearer 22swko029o3wewjovgvs9wcqmk8p3ttrepueemyj'
-        }
-      });
+      const data = await apiData();
+
       setApiDataList(data);
       setList(data.slice(0, 9));
       setRemainList(data.slice(9));
@@ -97,13 +94,15 @@ export default function App() {
 
       setList(placeFilteredList);
     }
+  }, [checkType, checkPlace]);
 
+  useEffect(() => {
     if (keyword) {
       const keywordFilteredList = list.filter((item) => {
-        if (keyword === item.club.name.split('-')[0]) {
-          return (keyword === item.club.name.split('-')[0]);
-        } else if (keyword === item.club.name.split('-')[1]) {
-          return (keyword === item.club.name.split('-')[1]);
+        if (keyword === item.club.name.split('-')[0].trim()) {
+          return (keyword === item.club.name.split('-')[0].trim());
+        } else if (keyword === item.club.name.split('-')[1].trim()) {
+          return (keyword === item.club.name.split('-')[1].trim());
         } else if (keyword === item.club.place) {
           return (keyword === item.club.place);
         } else if (keyword === item.club.type) {
@@ -115,7 +114,7 @@ export default function App() {
     } else {
       setList(originList);
     }
-  }, [checkType, checkPlace, keyword]);
+  }, [keyword]);
 
   const handleCheckType = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     setCheckType(e.target.value);

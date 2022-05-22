@@ -30,7 +30,13 @@ const CardWrapper = styled('div')`
   display: grid;
   justify-content: center;
   grid-template-columns: repeat(3, 400px);
-  gap: 10px;
+  gap: 20px;
+
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: repeat(3, 250px);
+    grid-template-rows: repeat(1, 0.5fr);
+    grid-template-columns: repeat(1, 0.5fr);
+  }
 `;
 
 const Card = styled('div')`
@@ -51,6 +57,7 @@ const Card = styled('div')`
 const TextWrapper = styled('div')`
   width: 100%;
   margin-left: 10px;
+  text-align: center;
 
   span {
     margin-right: 8px;
