@@ -1,46 +1,59 @@
-# Getting Started with Create React App
+# Frontend_Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 실행 방법
 
-## Available Scripts
+git clone을 한 후, 실행에 필요한 모듈을 설치해주세요
 
-In the project directory, you can run:
+```
+npm install
+```
 
-### `npm start`
+.env 파일을 만드신 후 아래 환경 변수를 입력해주세요.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+REACT_APP_API_URL=https://api.json-generator.com/templates/ePNAVU1sgGtQ/data
+REACT_APP_TOKEN=22swko029o3wewjovgvs9wcqmk8p3ttrepueemyj
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+아래 명령어로 프로그램을 실행해주세요.
 
-### `npm test`
+```
+npm run start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 요구 사항
 
-### `npm run build`
+### 사용자 스토리
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- [⭕️] 사용자는 검색어를 입력할 수 있습니다.
+- [⭕️] 사용자는 검색에 도움이 되는 필터를 설정할 수 있습니다.
+- [⭕️] 사용자는 검색어, 필터를 통해 해당 데이터가 포함된 상품 배열을 반환하는 **[API](https://api.json-generator.com/templates/ePNAVU1sgGtQ/data)**를 호출합니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 요구 사항
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- [⭕️] React 와 typescript 를 사용해서 구현합니다.
+- [⭕️] 디자인, 기획 문서가 없기 때문에 자유롭게 사용자 스토리에 기반해서 구현하시면 됩니다. 해당 구현에 있어서 어떠한 제약도 없습니다.
+- [⭕️] UI 구현, 상태 값 관리에 어려움이 있을 경우 외부 라이브러리, 컴포넌트를 사용해도 좋습니다.
+- [⭕️] 스타일 라이브러리는 emotion 을 사용해주세요. (mui, antd 등 CSS Framework 는 사용을 금지합니다.)
+- [⭕️] GitHub public repo에 작업하신 뒤 repository 주소를 전달해 주세요. 단, repo 이름 및 code/documentation에 trevari라는 키워드를 넣지 말아 주세요.
+- [⭕️] Git 사용 시 유의미한 커밋, 커밋 메시지를 작성해 주세요.
+- [⭕️] 개선 / 문제 해결 관련된 내용이 더 있다면 **README.md**에 작성해 주세요.
+- [⭕️] 본인이 계획한 스펙을 충실히 구현하며 사용자가 사용했을 때 오류 없이 작동되어야 합니다. 코드상으로는 최소한 Lint 검사를 통과해야 합니다.
+- [❌] 검색어 / 필터 정보는 **URL** 형태로 동기화가 되어야 합니다.
+- [⭕️] **Infinite Scroll**을 구현해서 **목록 페이징**이 가능해야 합니다.
 
-### `npm run eject`
+### 우대 사항
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- [⭕️] 테스트 코드 작성
+- [⭕️] Grid 뷰 / 목록 뷰
+- [❌] Graphql 을 이용한 node 서버 구현
+- [⭕️] 반응형 대응
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 아쉬운 점
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Infinity Scroll을 구현하기 위해 최상단 컴포넌트인 App 컴포넌트에서 useEffect를 사용해 구현한 후, 리펙토링 과정에서 Hook으로 따로 빼주는 시도를 했지만 구현이 잘 이루어지지 않은 점이 아쉽습니다. custom Hook과 App 컴포넌트 간 무한 스크롤이 일어났을 떄 전달하는 파라미터 설정을 잘 못 한 것이라 생각되는데 해결 하지 못 한 점이 아쉽습니다.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- 필터링 헤더에서 초기화 시켜주는 부분을 window.location.reload로 아예 새로 렌더링 시켜준 것이 아쉽습니다. 리렌더링 없이 다른 좋은 방법을 찾지 못 해 이와 같은 방법으로 진행했는데 더 좋은 방법이 있다면 배우고 싶습니다.
+  혹시 기회가 된다면 알려주시면 감사하겠습니다!
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- 필터 후 url에 필터 적용한 것을 어떻게 적용할까에 대한 고민을 했습니다. 서버가 있다면 필터한 키워드를 서버로 보내고, 서버에서는 넘어온 키워드와 데이터를 매칭한 데이터를 클라이언트로 보내며 쿼리 값도 함께 넘기는건가 싶은 생각이 들었습니다. 그래서 우대 사항 중 graphql을 이용한 node 서버 구현이 이런 의도가 아닐까 싶었는데 구현까지는 하지 못해 아쉬움이 남았습니다.

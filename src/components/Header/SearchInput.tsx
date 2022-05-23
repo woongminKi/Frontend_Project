@@ -20,7 +20,7 @@ export default function SearchInput({ onKeywordChange }: any) {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Input type="text" value={keyword} onChange={(e) => onChange(e)} placeholder="🔍 검색어를 입력하세요" />
+        <Input type="text" value={keyword} onChange={(e) => onChange(e)} placeholder='검색어를 입력하세요' />
       </form>
     </>
   );
